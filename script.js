@@ -2,12 +2,12 @@ import utils from './utils.js'
 import RNA from './RNA.js'
 import controls from './controls.js'
 
-const SAMPLES = 20;
+const SAMPLES = 10;
 const game = Runner.instance_; // pra sempre instanciar o jogo
 let dinoList = [];
 let dinoIndex = 0;
 
-let bestCore = 0;
+let bestScore = 0;
 let bestRNA = null;
 
 
@@ -15,7 +15,7 @@ function fillDinoList() {
     for (let i = 0; i < SAMPLES; i++) {
         dinoList[i] = new RNA(3, [10, 10, 2]);
         dinoList[i].load(bestRNA);
-        if (i > 0) dinoList[i].mutate(0.5);
+        if (i > 0) dinoList[i].mutate(0.2);
     }
     console.log('Lista de dinossauros criada.');
 }
@@ -40,7 +40,7 @@ setInterval(() => {
         }
         dinoIndex++;
     
-    if (dinoInde === SAMPLES) {
+    if (dinoIndex === SAMPLES) {
         fillDinoList();
         dinoIndex = 0;
         bestScore = 0;
@@ -59,17 +59,17 @@ setInterval(() => {
 
   // calculo dos obstaculos
   const [obstacle] = horizon.obstacles
-  .map((obstacle) => {
+  .map((obstacles) => {
     return {
         x: obstacles.xPos,
         x: obstacles.yPos
     };
   })
-  .filter((obnstacle) => obstacles.x > player.x)
+  .filter((obstacle) => obstacles.x > player.x)
 
   //verificar obstaculo presente na camera
   if(obstacle) {
-    const distance = 1 - (utils.getDistance(player, obstacle) / dimesions.WIDTH);
+    const distance = 1 - (utils.getDistance(player, obstacle) / dimensions.WIDTH);
     const speed = player.speed / 6;
     const height = Math.tanh(105 - obstacle.y)
 
@@ -80,8 +80,8 @@ setInterval(() => {
     ]);
 
     if (jump === crouch) return; //se o pulo e o agachar for identicos/iguais não executa nada
-    if (jump) constrols.dispatch('jump'); // se for verdadeira o dino pula
-    if (crouch) constrols.dispatch('crouch'); // se for verdadeira o dino agacha
+    if (jump) controls.dispatch('jump'); // se for verdadeira o dino pula
+    if (crouch) controls.dispatch('crouch'); // se for verdadeira o dino agacha
   };
 }, 100);
 

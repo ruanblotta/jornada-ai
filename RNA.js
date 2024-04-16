@@ -9,7 +9,7 @@ function lerp(a, b, t) {
 }
 
 class Neuron {
-    costrucor(inputs) {
+    constructor(inputs) {
         this.bias = randomRange(-1, 1); // bias = viés
 
 
@@ -23,38 +23,39 @@ class Neuron {
 g(signalList = []); {
     let u = 0;
 
-    for (let i = 0; i < this.weightList.lenght; i++) {
-        u += signalList[i] * this.weightList[i]
+    // Calcula a soma ponderada dos sinais de entrada multiplicados pelos pesos
+    for (let i = 0; i < this.weightList.length; i++) {
+      u += signalList[i] * this.weightList[i];
     }
 
-    // verificar se o neuronio está ativado
-    if(Math.tanh(u) > this.bias) return 1; // ativado
-    else return 0; // não foi ativado
-};
+    // Verifica se o neurônio está ativado com base na função tangente
+    if (Math.tanh(u) > this.bias) return 1; // Ativado
+    else return 0; // Não ativado
+  }
 
 // função mutação dos pesos, para que os filhos seja evolutiva e não cópias
 mutate(rate = 1); {
-    this.weightList = this.weightList.map(() => { // mepear os números
+    this.weightList = this.weightList.map((w) => { // mepear os números
         return lerp(w, randomRange(-1, 1), rate)
     });
     
-    this.bioas = lerp(this.bias, randomRange(-1, 1), range)
+    this.bias = lerp(this.bias, randomRange(-1, 1), rate)
 }
 
 class RNA {
     constructor(inputCount = 1, levelList = []) {
         this.score = 0;
 
-        this.levelList = FileList.map((l, i) => {
-            const inputSize = i === 0 ? inputCount : levelList[i = 1]
+        this.levelList = levelList.map((l, i) => {
+            const inputSize = i === 0 ? inputCount : levelList[i - 1]
 
-            return new ArrayBuffer(l).fill().map(() => new Neuron(inputSize)); 
+            return new Array(l).fill().map(() => new Neuron(inputSize)); 
         });
     } 
 
     //calcular toda saida da rna 
     compute(list = []) {
-        for(let i = 0; i < this.levelList.lenght; i++) {
+        for(let i = 0; i < this.levelList.length; i++) {
             const tempList = []
 
             for (const neuron of this.levelList[i]) {
@@ -63,14 +64,14 @@ class RNA {
             }
             list = tempList;
         }
-        return list;
+        return list; // retorna a saída final do RNA
     }
 }
 
 // aplicar função mutate
 mutate(rate = 1); {
     for (const level of this.levelList) {
-        for (const neuron of level) neuron.matate(rate)
+        for (const neuron of level) neuron.mutate(rate)
     }
 }
 
