@@ -81,7 +81,7 @@ setInterval(() => {
 
     if (jump === crouch) return; //se o pulo e o agachar for identicos/iguais não executa nada
     if (jump) constrols.dispatch('jump'); // se for verdadeira o dino pula
-    if (crouch) constrols.dispatch('corach'); // se for verdadeira o dino agacha
+    if (crouch) constrols.dispatch('crouch'); // se for verdadeira o dino agacha
   };
 }, 100);
 
