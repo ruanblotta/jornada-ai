@@ -1,92 +1,88 @@
-import utils from './utils.js'
-import RNA from './RNA.js'
-import controls from './controls.js'
+import utils from './utils';
+import RNA from './RNA.js';
+import controls from './controls.js';
 
-const SAMPLES = 10;
-const game = Runner.instance_; // pra sempre instanciar o jogo
-let dinoList = [];
-let dinoIndex = 0;
+const SAMPLES = 10; // Número de amostras 
+const game = Runner.instance_; // Pra sempre instanciar o jogo
+let dinoList = []; // Lista de Dinossauros
+let dinoIndex = 0; // Índice do dinossauro atual na lista
 
-let bestScore = 0;
-let bestRNA = null;
-
+let bestScore = 0; // Melhor pontuação encontrada enquanto ocorre o treinamento da IA
+let bestRNA = null; // Melhor RNA encontrada enquanto ocorre o treinamento da IA
 
 function fillDinoList() {
     for (let i = 0; i < SAMPLES; i++) {
-        dinoList[i] = new RNA(3, [10, 10, 2]);
-        dinoList[i].load(bestRNA);
-        if (i > 0) dinoList[i].mutate(0.2);
+        dinoList[i] = new RNA(3, [10, 10, 2]); // Cria um novo dinossauro com uma RNA de 3 camadas, podendo modificar
+        dinoList[i].load(bestRNA); // Carrega a melhor RNA encontrada 
+        if (i > 0) dinoList[i].mutate(0.2); // Mutação na RNA dos dinossauros, exceto o primeiro
     }
-    console.log('Lista de dinossauros criada.');
+    console.log('Dino list was created!');
 }
 
-// pular o cacto
 setTimeout(() => {
-    fillDinoList()
-        controls.dispatch('jump');
-}, 1000)
+    fillDinoList();
+    constrols.dispatch('jump'); // Faz o dinossauro executar um salto no jogo
+}, 1000); // a quantidade de ms
 
 setInterval(() => {
-    if(!game.activated) return;
+    if (!game.activated) return; // Verifica se o jogo está ativado
 
-    const dino = dinoList[dinoIndex];
-    
-    // verificar colisões
-    if (game.crashed) {
+    const dino = dinoList[dinoIndex]; // Seleciona o dinossauro atual
+
+    if (game.crashed) { //verifica se o dinossauro colidiou em algo
         if (dino.score > bestScore) {
             bestScore = dino.score;
-            bestRNA = dino.save();
-            console.log("Melhor pontuação: ", bestScore);
+            bestRNA = dino.save(); // Salva o RNA do dinossauro com a melhor pontuação
+            console.log('bestScore:', bestScore);
         }
         dinoIndex++;
-    
-    if (dinoIndex === SAMPLES) {
-        fillDinoList();
-        dinoIndex = 0;
-        bestScore = 0;
+        
+        if (dinoINdex === SAMPLES) { // Se todos os dinos foram avaliados, preenche a lista novamente
+            fillDinoList();
+            dinoIndex = 0;
+            bestScore = 0;
+        }
+        game.restart(); // Reinicia o jogo
     }
-    game.restart();
-  }
 
-  const {tRex, horizon, currentSpeed, distanceRan, dimensions} = game;
-  dino.score = distanceRan - 2000;
+    const { tRex, horizon, currentSpeed, distanceRan, dimensions } = game;
+    dino.score = distanceRan - 2000; // Calcula a pontuação do dinossauro
 
-  const player = {
-    x: tRex.xPos,
-    y: tRex.yPos,
-    speed: currentSpeed
-  };
-
-  // calculo dos obstaculos
-  const [obstacle] = horizon.obstacles
-  .map((obstacles) => {
-    return {
-        x: obstacles.xPos,
-        x: obstacles.yPos
+    const player = {
+        x: tRex.xPos,
+        y: tRex.yPos,
+        speed: currentSpeed,
     };
-  })
-  .filter((obstacle) => obstacles.x > player.x)
 
-  //verificar obstaculo presente na camera
-  if(obstacle) {
-    const distance = 1 - (utils.getDistance(player, obstacle) / dimensions.WIDTH);
-    const speed = player.speed / 6;
-    const height = Math.tanh(105 - obstacle.y)
+    const [obstacle] = horizon.obstacles
+        .map((obstacles) => {
+            return {
+                x: obstacle.xPos,
+                y: obstacle.yPos,
+            }
+        })
+        .filter((obstacle) => obstacle.x > player.x)
 
-// pular e abaixar
-    const [jump, crouch] = dino.compute([
-        distance,
-        speed,height,
-    ]);
+    if (obstacle) { // Verifica se há um obstáculo presente
+        const distance = 1 - (utils.getDistance(player, obstacle) / dimensions.WIDTH); // Calcula a distância relativa entre o dino(player) e o obstáculo
+        const speed = player.speed / 6; // Calcula a velocidade relativa do jogador
+        const height = Math.tanh(105 - obstacle.y); // Calcula a altura relativa do obstáculo
 
-    if (jump === crouch) return; //se o pulo e o agachar for identicos/iguais não executa nada
-    if (jump) controls.dispatch('jump'); // se for verdadeira o dino pula
-    if (crouch) controls.dispatch('crouch'); // se for verdadeira o dino agacha
-  };
-}, 100);
+        // Processa as informações no dino atual
+        const [jump, crouch] = dino.compute([
+            distance,
+            speed,
+            height,
+        ]);
 
-// botao para ativar a ai
+        // Executa as ações com base nas probabilidades calculadas
+        if (jump === crouch) return; // Se a probabilidade de salto e agachamento forem iguais, nenhuma ação é tomada
+        if (jump) controls.dispatch('jump'); // Se a probabilidade de salto for verdadeira, o dinossauro executa um salto
+        if (crouch) controls.dispatch('crouch'); // Se a probabilidade de agachamento for verdadeiro, o dino agacha
+    }
+}, 1000);
+
 /* const s = document.createElement('script');
 s.type = 'module';
-s.src = 'http://127.0.0.1:5500/script.js'
+s.src = 'http://localhost:5500/script.js';
 document.body.appendChild(s); */
