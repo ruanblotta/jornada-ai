@@ -88,5 +88,5 @@ setInterval(() => {
 // botao para ativar a ai
 /* const s = document.createElement('script');
 s.type = 'module';
-s.src = 'http://localhost:5500/script.js'
+s.src = 'http://127.0.0.1:5500/script.js'
 document.body.appendChild(s); */

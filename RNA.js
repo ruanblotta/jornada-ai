@@ -10,17 +10,18 @@ function lerp(a, b, t) {
 
 class Neuron {
     constructor(inputs) {
-        this.bias = randomRange(-1, 1); // bias = viés
-
-
-        this.weightList = new Array(inputs)
+      // Inicializa o neurônio com um viés (bias)
+  
+      // O viés (bias) na nossa rede neural é um número que ajuda a rede a aprender
+      this.bias = randomRange(-1, 1);
+      
+      this.weightList = new Array(inputs)
         .fill()
-        .map(() => randomRange(-1, 1))
-    }
-};
+        .map(() => randomRange(-1, 1));
+    };
 
 // função para analisar a ativação do neuronio
-g(signalList = []); {
+g(signalList = []) {
     let u = 0;
 
     // Calcula a soma ponderada dos sinais de entrada multiplicados pelos pesos
@@ -34,12 +35,14 @@ g(signalList = []); {
   }
 
 // função mutação dos pesos, para que os filhos seja evolutiva e não cópias
-mutate(rate = 1); {
-    this.weightList = this.weightList.map((w) => { // mepear os números
-        return lerp(w, randomRange(-1, 1), rate)
+mutate(rate = 1) {
+    this.weightList = this.weightList.map((w) => {
+      // Faz uma mudança nos pesos com base na taxa 'rate'
+      return lerp(w, randomRange(-1, 1), rate);
     });
-    
-    this.bias = lerp(this.bias, randomRange(-1, 1), rate)
+    // Faz uma mudança no viés (bias) com base na taxa 'rate'
+    this.bias = lerp(this.bias, randomRange(-1, 1), rate);
+  }
 }
 
 class RNA {
